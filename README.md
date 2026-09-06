@@ -2,7 +2,13 @@
 
 Sitio estático de una sola página. No requiere build.
 
-- `index.html` — la invitación completa (música y formulario incluidos, sin dependencias externas salvo Google Fonts).
+- `index.html` — la invitación completa (formulario incluido).
+- `musica.mp3` — la música de fondo. Va como archivo aparte, no incrustada en el
+  HTML: así la página se muestra enseguida y el audio se descarga en paralelo,
+  en vez de hacer esperar al invitado hasta tener la canción entera.
+  Si algún día se cambia la canción, conviene subirla con **otro nombre**: el
+  archivo se sirve con caché de un año, así que un reemplazo con el mismo
+  nombre lo seguirían escuchando viejo quienes ya visitaron la invitación.
 - `vercel.json` — evita que el navegador cachee la página, para que cualquier cambio que publiques se vea al instante.
 
 ## Publicar

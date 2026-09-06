@@ -809,7 +809,7 @@
                 
                 <!-- Brindis: sólo para quienes llegan a las 15:00 -->
                 <div style="margin-bottom: 40px; display: none;" id="bloqueBrindis">
-                    <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte I: El Brindis</h3>
+                    <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte I: Civil - Brindis</h3>
                     <div class="detail-card">
                         <p><strong>Viernes 4 de Diciembre</strong></p>
                         <div class="time">15:00 hs</div>
@@ -1248,9 +1248,29 @@
         })();
 
         // ===== VENTANA DE REGALOS =====
-        function abrirRegalos() {
+        // Los dos textos se fijan siempre, no sólo el que cambia: si alguien
+        // envía dos veces en la misma visita, la ventana no queda con el
+        // mensaje de la respuesta anterior.
+        var TEXTOS_REGALOS = {
+            confirmed: {
+                titulo: '¡Muchas gracias por acompañarnos!',
+                intro: 'Si deseás acompañarnos también con un obsequio, te dejamos nuestros datos bancarios.'
+            },
+            declined: {
+                titulo: '¡Gracias por avisarnos!',
+                intro: '¡Qué lástima que no puedas asistir, te vamos a extrañar! Si deseás acompañarnos con un obsequio, te dejamos nuestros datos bancarios.'
+            }
+        };
+
+        function abrirRegalos(respuesta) {
             var modal = document.getElementById('regalosModal');
             if (!modal) { return; }
+
+            var textos = TEXTOS_REGALOS[respuesta] || TEXTOS_REGALOS.confirmed;
+            var titulo = document.getElementById('regalosModalTitulo');
+            var intro  = modal.querySelector('.regalos-intro');
+            if (titulo) { titulo.textContent = textos.titulo; }
+            if (intro)  { intro.textContent  = textos.intro; }
             modal.style.display = 'block';
             modal.scrollTop = 0;
             document.body.style.overflow = 'hidden';   // evita el scroll de fondo
@@ -1370,7 +1390,7 @@
                     // Los regalos recién se muestran una vez que respondió.
                     // El retardo deja que termine el scroll al cartel verde, para
                     // que al cerrar la ventana lo encuentre ahí mismo.
-                    setTimeout(abrirRegalos, 600);
+                    setTimeout(function () { abrirRegalos(datos.confirmation); }, 600);
                 }, function (error) {
                     // No salió: se conserva lo cargado para que pueda reintentar.
                     console.log('Error al enviar a Google Sheets:', error);

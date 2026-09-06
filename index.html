@@ -376,54 +376,12 @@
             background: #d0d0d0;
         }
         
-        .btn-download {
-            background: #A0826D;
-            color: white;
-            padding: 7px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 11px;
-            border: none;
-            margin: 0;
-            width: auto;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Source Sans Pro', sans-serif;
-        }
         
-        .btn-download:hover {
-            background: #8A6F5E;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
         
         /* Lista de Confirmaciones */
-        .confirmations-section {
-            margin-top: 40px;
-        }
         
-        .confirmations-header {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-bottom: 20px;
-        }
         
-        .confirmations-count {
-            background: #A0826D;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
         
-        .confirmations-list {
-            display: grid;
-            gap: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
         
         .confirmation-item {
             background: white;
@@ -931,17 +889,6 @@
                 </form>
             </section>
             
-            <!-- Confirmaciones -->
-            <section class="section confirmations-section">
-                <div class="confirmations-header">
-                    <button class="btn-download" onclick="checkAccessForDownload()" id="downloadBtn">Descargar Confirmados</button>
-                </div>
-                
-                <div class="confirmations-list" id="confirmationsList" style="display: none;">
-                    <div class="empty-message">Aún no hay confirmaciones. Sé el primero en confirmar</div>
-                </div>
-            </section>
-            
             <!-- Footer -->
             <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e0e0e0; margin-top: 40px; color: #999; font-size: 18px;">
                 <p>Gracias por ser parte de nuestro día especial</p>
@@ -978,21 +925,6 @@
         </div>
     </div>
 
-    <div id="accessModal" class="modal">
-        <div class="modal-content">
-            <h3>Acceso Restringido</h3>
-            <p>Esta función es solo para los novios. Por favor, ingresa el código de acceso:</p>
-            <input type="password" id="accessCode" placeholder="Código de acceso" onkeypress="if(event.key === 'Enter') confirmAccess()">
-            <div class="modal-buttons">
-                <button class="btn-confirm" onclick="confirmAccess()">Acceder</button>
-                <button class="btn-cancel" onclick="closeAccessModal()">Cancelar</button>
-            </div>
-            <p style="margin-top: 15px; font-size: 12px; text-align: center; color: #999;">
-                Tip: Si olvidaste el código, recarga la página
-            </p>
-        </div>
-    </div>
-    
     <script>
         // ===== REPRODUCCIÓN DE MÚSICA =====
         // Estrategia compatible con Chrome/Android, Safari/iPhone y escritorio:
@@ -1201,31 +1133,6 @@
             });
         });
         
-        // Código de acceso para descargar (puedes cambiar "raul2024" por lo que quieras)
-        const DOWNLOAD_PASSWORD = "raul2024";
-        
-        function checkAccessForDownload() {
-            document.getElementById('accessModal').style.display = 'block';
-            document.getElementById('accessCode').focus();
-        }
-        
-        function closeAccessModal() {
-            document.getElementById('accessModal').style.display = 'none';
-            document.getElementById('accessCode').value = '';
-        }
-        
-        function confirmAccess() {
-            const code = document.getElementById('accessCode').value;
-            if (code === DOWNLOAD_PASSWORD) {
-                closeAccessModal();
-                downloadConfirmations();
-            } else {
-                alert('❌ Código incorrecto. Intenta nuevamente.');
-                document.getElementById('accessCode').value = '';
-                document.getElementById('accessCode').focus();
-            }
-        }
-        
         // ===== COPIAR EL CBU =====
         (function () {
             // navigator.clipboard sólo existe en contextos seguros (https).
@@ -1323,25 +1230,12 @@
 
         // Cerrar modales si se hace clic fuera
         window.onclick = function(event) {
-            if (event.target === document.getElementById('accessModal')) {
-                closeAccessModal();
-            }
             if (event.target === document.getElementById('regalosModal')) {
                 cerrarRegalos();
             }
         }
         
         // Cargar confirmaciones desde localStorage
-        function loadConfirmations() {
-            const confirmations = JSON.parse(localStorage.getItem('weddingConfirmations') || '[]');
-            displayConfirmations(confirmations);
-        }
-        
-        // Mostrar confirmaciones (simplificado - no se muestra)
-        function displayConfirmations(confirmations) {
-            // Las confirmaciones se guardan en localStorage pero no se muestran en la UI
-        }
-        
         // URL del Google Apps Script
         const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyRUKOIRrFo-5fCcotefbBPqPF3mXVGs8bvrT9EZM8YzOjUXdyUOqtlFLjoJ9_xxWEfpw/exec';
         
@@ -1424,7 +1318,6 @@
                     guardarLocal(datos, true);
                     terminar();
                     form.reset();
-                    loadConfirmations();
                     // El mensaje queda visible: no se auto-oculta y la página
                     // sube hasta él para que el invitado lo vea sí o sí.
                     okBox.style.display = 'block';
@@ -1455,44 +1348,6 @@
             });
         })();
 
-        // Descargar como Excel
-        function downloadConfirmations() {
-            const confirmations = JSON.parse(localStorage.getItem('weddingConfirmations') || '[]');
-            
-            if (confirmations.length === 0) {
-                alert('No hay confirmaciones para descargar aún');
-                return;
-            }
-            
-            // Crear CSV
-            const headers = ['Nombre', 'Adultos', 'Niños (0-3)', 'Estado', 'Fecha de Confirmación'];
-            const rows = confirmations.map(c => [
-                c.guestName,
-                c.adults,
-                c.children,
-                c.confirmation === 'confirmed' ? 'Confirmado' : 'No asiste',
-                c.timestamp
-            ]);
-            
-            let csv = headers.join(',') + '\n';
-            rows.forEach(row => {
-                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
-            });
-            
-            // Descargar
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'confirmaciones_boda_civil_virginia.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // Cargar confirmaciones al iniciar
-        loadConfirmations();
     </script>
 </body>
 </html>

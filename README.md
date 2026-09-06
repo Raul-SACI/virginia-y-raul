@@ -14,6 +14,30 @@ Sitio estático de una sola página. No requiere build.
   nombre lo seguirían escuchando viejo quienes ya visitaron la invitación.
 - `vercel.json` — evita que el navegador cachee la página, para que cualquier cambio que publiques se vea al instante.
 
+## Los tres grupos
+
+Hay un archivo por grupo de invitados:
+
+| Link | Archivo | Quién |
+|---|---|---|
+| `/`        | `index.html`   | Parejas — civil, almuerzo, 1 o 2 adultos |
+| `/solo`    | `solo.html`    | Invitados solos — civil, almuerzo, 1 adulto fijo |
+| `/brindis` | `brindis.html` | Brindis de las 15:00 |
+
+Están separados porque WhatsApp no ejecuta JavaScript al armar la vista previa
+del link: para que cada invitación tenga su propia tarjeta, el título tiene que
+estar en el HTML crudo.
+
+**Sólo se edita `index.html`.** `solo.html` y `brindis.html` se generan:
+
+    python3 generar-variantes.py
+
+Correr eso después de cada cambio, antes de publicar, o los tres archivos
+quedan desincronizados.
+
+Los links viejos con `?i=solo` y `?i=brindis` siguen funcionando: el parámetro
+tiene prioridad sobre el archivo, así que lo ya repartido no se rompe.
+
 ## Publicar
 
 Importar el repositorio en Vercel. No hace falta configurar nada:

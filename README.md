@@ -3,6 +3,9 @@
 Sitio estático de una sola página. No requiere build.
 
 - `index.html` — la invitación completa (formulario incluido).
+- `portada.jpg` — la foto de la portada. Va como archivo aparte porque WhatsApp
+  y las demás redes no leen imágenes incrustadas en base64: la vista previa al
+  compartir el link necesita una URL absoluta a un archivo real.
 - `musica.mp3` — la música de fondo. Va como archivo aparte, no incrustada en el
   HTML: así la página se muestra enseguida y el audio se descarga en paralelo,
   en vez de hacer esperar al invitado hasta tener la canción entera.

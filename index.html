@@ -791,8 +791,8 @@
             <section class="section">
                 <h2 class="section-title" id="tituloDetalles">Detalles del Evento</h2>
                 
-                <!-- Parte I: Nuestro Civil -->
-                <div style="margin-bottom: 40px;">
+                <!-- Parte I: Nuestro Civil (no la ve el grupo del brindis) -->
+                <div style="margin-bottom: 40px;" id="bloqueCivil">
                     <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte I: Nuestro Civil</h3>
                     <div class="detail-card">
                         <p><strong>Viernes 4 de Diciembre</strong></p>
@@ -807,6 +807,21 @@
                     </p>
                 </div>
                 
+                <!-- Brindis: sólo para quienes llegan a las 15:00 -->
+                <div style="margin-bottom: 40px; display: none;" id="bloqueBrindis">
+                    <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte I: El Brindis</h3>
+                    <div class="detail-card">
+                        <p><strong>Viernes 4 de Diciembre</strong></p>
+                        <div class="time">15:00 hs</div>
+                        <p style="margin-top: 12px; font-size: 14px; color: #666;">
+                            Showroom de Country San Pablo
+                        </p>
+                    </div>
+                    <p style="color: #666; margin-top: 20px; font-size: 21px; line-height: 1.8;">
+                        ¡Te esperamos para brindar con nosotros!
+                    </p>
+                </div>
+
                 <!-- Parte II: Nuestra Boda -->
                 <div>
                     <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte II: Nuestra Boda</h3>
@@ -821,7 +836,7 @@
             <section class="section">
                 <h2 class="section-title">Confirma tu Asistencia</h2>
                 
-                <p style="color: #666; margin-bottom: 20px; font-size: 18px; line-height: 1.8;">
+                <p style="color: #666; margin-bottom: 20px; font-size: 18px; line-height: 1.8;" id="textoConfirmacion">
                     Confirmá tu asistencia para nuestro Civil. (4 de Diciembre)
                 </p>
                 
@@ -856,14 +871,6 @@
                                 <option value="">Selecciona...</option>
                                 <option value="1">1 adulto</option>
                                 <option value="2">2 adultos</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="children">Niños (0-3 años)</label>
-                            <select id="children" name="children">
-                                <option value="0">Ninguno</option>
-                                <option value="1">1 niño</option>
-                                <option value="2">2 niños</option>
                             </select>
                         </div>
                     </div>
@@ -1133,6 +1140,44 @@
             });
         });
         
+        // ===== GRUPO DE INVITADOS =====
+        // Una sola página para tres invitaciones distintas. El grupo llega en la
+        // URL (?i=solo, ?i=brindis) y sin parámetro es «pareja», que es el grupo
+        // más numeroso: así el link corto y limpio sigue sirviendo para la mayoría.
+        var GRUPO = (function () {
+            var permitidos = ['pareja', 'solo', 'brindis'];
+            var valor = '';
+            try {
+                valor = (new URLSearchParams(window.location.search).get('i') || '').toLowerCase().trim();
+            } catch (e) {
+                // URLSearchParams no existe en navegadores muy viejos
+                var m = window.location.search.match(/[?&]i=([^&]*)/);
+                valor = m ? decodeURIComponent(m[1]).toLowerCase().trim() : '';
+            }
+            // Ante un valor mal escrito conviene caer en «pareja»: muestra el
+            // evento completo, que es preferible a esconderle algo a quien sí está invitado.
+            return permitidos.indexOf(valor) === -1 ? 'pareja' : valor;
+        })();
+
+        (function () {
+            var civil    = document.getElementById('bloqueCivil');
+            var brindis  = document.getElementById('bloqueBrindis');
+            var adultos  = document.getElementById('adults');
+            var texto    = document.getElementById('textoConfirmacion');
+
+            if (GRUPO === 'brindis') {
+                if (civil)   { civil.style.display = 'none'; }
+                if (brindis) { brindis.style.display = ''; }
+                if (texto)   { texto.textContent = 'Confirmá tu asistencia al brindis. (4 de Diciembre, 15:00 hs)'; }
+            }
+
+            // Al invitado solo no se le ofrece un segundo lugar: no hay opción
+            // que rechazar, y queda claro que lo esperamos a él.
+            if (GRUPO === 'solo' && adultos) {
+                adultos.innerHTML = '<option value="1" selected>1 adulto</option>';
+            }
+        })();
+
         // ===== COPIAR EL CBU =====
         (function () {
             // navigator.clipboard sólo existe en contextos seguros (https).
@@ -1292,7 +1337,8 @@
                 var datos = {
                     guestName: document.getElementById('guestName').value.trim(),
                     adults: document.getElementById('adults').value,
-                    children: document.getElementById('children').value,
+                    children: '0',        // se mantiene para no alterar las columnas ya cargadas
+                    grupo: GRUPO,         // pareja | solo | brindis
                     confirmation: marcado.value,
                     timestamp: new Date().toLocaleString('es-AR')
                 };

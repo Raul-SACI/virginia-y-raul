@@ -497,6 +497,51 @@
             line-height: 1.6;
         }
 
+        /* La ventana de Regalos puede ser más alta que la pantalla en celulares */
+        .modal-regalos {
+            max-width: 460px;
+            margin: 8vh auto;
+            max-height: 84vh;
+            overflow-y: auto;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-regalos h3 {
+            font-size: 26px;
+            padding-right: 30px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #A0826D;
+        }
+
+        .regalos-intro {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 22px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #A0826D;
+            font-size: 30px;
+            line-height: 1;
+            cursor: pointer;
+            border-radius: 50%;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .modal-close:active { background: rgba(160, 130, 109, 0.15); }
+
         .error-detail {
             margin-top: 10px;
             font-size: 12px;
@@ -574,6 +619,8 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal-content {
@@ -800,8 +847,8 @@
                 </form>
             </section>
             
-            <!-- Regalos Section -->
-            <section class="section">
+            <!-- Regalos Section: oculta hasta que el invitado responde el formulario -->
+            <section class="section" id="regalosSection" style="display: none;">
                 <h2 class="section-title">Regalos</h2>
                 
                 <p style="color: #666; margin-bottom: 25px; font-size: 21px; line-height: 1.9;">
@@ -840,6 +887,33 @@
     </div>
     
     <!-- Modal de Acceso para Descargar -->
+    <!-- Ventana de Regalos: se abre al confirmar (o no) la asistencia -->
+    <div id="regalosModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="regalosModalTitulo">
+        <div class="modal-content modal-regalos">
+            <button type="button" class="modal-close" id="regalosClose" aria-label="Cerrar">&times;</button>
+            <h3 id="regalosModalTitulo">Regalos</h3>
+            <p class="regalos-intro">
+                No hay regalo más valioso que tu compañía en este momento tan importante.
+                Si deseás acompañarnos también con un obsequio, compartimos nuestros datos bancarios.
+                ¡Gracias por ser parte de nuestra historia!
+            </p>
+            <div class="detail-card" style="background-color: #f9f7f4; border-left: 4px solid #A0826D;">
+                <p style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                    <strong>Banco:</strong> BBVA Francés
+                </p>
+                <p style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                    <strong>Alias:</strong> <span style="color: #A0826D; font-weight: 600;">VIRYRAUL</span>
+                </p>
+                <p style="margin-bottom: 0; font-size: 14px; color: #666;">
+                    <strong>CBU:</strong> <span style="color: #A0826D; font-weight: 600;">0170215820000007946828</span>
+                </p>
+            </div>
+            <div class="modal-buttons" style="margin-top: 22px;">
+                <button type="button" class="btn-confirm" id="regalosOk">Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <div id="accessModal" class="modal">
         <div class="modal-content">
             <h3>Acceso Restringido</h3>
@@ -1080,11 +1154,44 @@
             }
         }
         
-        // Cerrar modal si se hace clic fuera
+        // ===== VENTANA DE REGALOS =====
+        function abrirRegalos() {
+            // Además de la ventana, se revela la sección en la página: si el
+            // invitado cierra el cartel y más tarde quiere el CBU, sigue estando.
+            var seccion = document.getElementById('regalosSection');
+            if (seccion) { seccion.style.display = ''; }
+
+            var modal = document.getElementById('regalosModal');
+            if (!modal) { return; }
+            modal.style.display = 'block';
+            modal.scrollTop = 0;
+            document.body.style.overflow = 'hidden';   // evita el scroll de fondo
+        }
+
+        function cerrarRegalos() {
+            var modal = document.getElementById('regalosModal');
+            if (!modal) { return; }
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        (function () {
+            var cerrar = document.getElementById('regalosClose');
+            var ok = document.getElementById('regalosOk');
+            if (cerrar) { cerrar.addEventListener('click', cerrarRegalos); }
+            if (ok) { ok.addEventListener('click', cerrarRegalos); }
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' || e.key === 'Esc') { cerrarRegalos(); }
+            });
+        })();
+
+        // Cerrar modales si se hace clic fuera
         window.onclick = function(event) {
-            const modal = document.getElementById('accessModal');
-            if (event.target === modal) {
+            if (event.target === document.getElementById('accessModal')) {
                 closeAccessModal();
+            }
+            if (event.target === document.getElementById('regalosModal')) {
+                cerrarRegalos();
             }
         }
         
@@ -1186,6 +1293,10 @@
                     // sube hasta él para que el invitado lo vea sí o sí.
                     okBox.style.display = 'block';
                     okBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Los regalos recién se muestran una vez que respondió.
+                    // El retardo deja que termine el scroll al cartel verde, para
+                    // que al cerrar la ventana lo encuentre ahí mismo.
+                    setTimeout(abrirRegalos, 600);
                 }, function (error) {
                     // No salió: se conserva lo cargado para que pueda reintentar.
                     console.log('Error al enviar a Google Sheets:', error);

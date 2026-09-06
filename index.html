@@ -542,6 +542,46 @@
 
         .modal-close:active { background: rgba(160, 130, 109, 0.15); }
 
+        .btn-copiar {
+            margin-left: 10px;
+            margin-top: 6px;
+            padding: 5px 13px;
+            border: 1px solid #A0826D;
+            border-radius: 14px;
+            background: transparent;
+            color: #A0826D;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            vertical-align: middle;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .btn-copiar:active { background: rgba(160, 130, 109, 0.15); }
+
+        .btn-copiar.copiado {
+            background: #d4edda;
+            border-color: #b7dfc2;
+            color: #155724;
+        }
+
+        .btn-copiar.fallo {
+            background: #f8d7da;
+            border-color: #f0b6bc;
+            color: #721c24;
+        }
+
+        /* En pantallas angostas el CBU es largo: que corte prolijo */
+        .cbu-valor {
+            word-break: break-all;
+        }
+
         .error-detail {
             margin-top: 10px;
             font-size: 12px;
@@ -863,7 +903,8 @@
                         <strong>Alias:</strong> <span style="color: #A0826D; font-weight: 600;">VIRYRAUL</span>
                     </p>
                     <p style="margin-bottom: 0; font-size: 14px; color: #666;">
-                        <strong>CBU:</strong> <span style="color: #A0826D; font-weight: 600;">0170215820000007946828</span>
+                        <strong>CBU:</strong> <span class="cbu-valor" style="color: #A0826D; font-weight: 600;">0170215820000007946828</span>
+                    <button type="button" class="btn-copiar" aria-label="Copiar el CBU">Copiar</button>
                     </p>
                 </div>
             </section>
@@ -905,7 +946,8 @@
                     <strong>Alias:</strong> <span style="color: #A0826D; font-weight: 600;">VIRYRAUL</span>
                 </p>
                 <p style="margin-bottom: 0; font-size: 14px; color: #666;">
-                    <strong>CBU:</strong> <span style="color: #A0826D; font-weight: 600;">0170215820000007946828</span>
+                    <strong>CBU:</strong> <span class="cbu-valor" style="color: #A0826D; font-weight: 600;">0170215820000007946828</span>
+                    <button type="button" class="btn-copiar" aria-label="Copiar el CBU">Copiar</button>
                 </p>
             </div>
             <div class="modal-buttons" style="margin-top: 22px;">
@@ -1154,6 +1196,75 @@
             }
         }
         
+        // ===== COPIAR EL CBU =====
+        (function () {
+            // navigator.clipboard sólo existe en contextos seguros (https).
+            // El respaldo con execCommand cubre navegadores viejos y el caso
+            // de abrir el archivo localmente, donde clipboard no está disponible.
+            function copiar(texto) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    return navigator.clipboard.writeText(texto);
+                }
+                return new Promise(function (resolve, reject) {
+                    var area = document.createElement('textarea');
+                    area.value = texto;
+                    area.setAttribute('readonly', '');
+                    area.style.position = 'fixed';
+                    area.style.top = '-1000px';
+                    area.style.opacity = '0';
+                    document.body.appendChild(area);
+                    area.select();
+                    area.setSelectionRange(0, area.value.length);  // hace falta en iOS
+                    var ok = false;
+                    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+                    document.body.removeChild(area);
+                    if (ok) { resolve(); } else { reject(new Error('copia no disponible')); }
+                });
+            }
+
+            var botones = document.querySelectorAll('.btn-copiar');
+            for (var i = 0; i < botones.length; i++) {
+                (function (boton) {
+                    var original = boton.textContent;
+                    var vuelta = null;
+
+                    boton.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        var valor = boton.parentNode.querySelector('.cbu-valor');
+                        if (!valor) { return; }
+
+                        function avisar(clase, texto) {
+                            boton.classList.remove('copiado', 'fallo');
+                            boton.classList.add(clase);
+                            boton.textContent = texto;
+                            clearTimeout(vuelta);
+                            vuelta = setTimeout(function () {
+                                boton.classList.remove('copiado', 'fallo');
+                                boton.textContent = original;
+                            }, 2200);
+                        }
+
+                        copiar(valor.textContent.trim()).then(function () {
+                            avisar('copiado', '\u2713 Copiado');
+                        }, function () {
+                            // Si no se pudo copiar, al menos se deja el número
+                            // seleccionado para que lo copie a mano.
+                            avisar('fallo', 'Copialo a mano');
+                            try {
+                                var rango = document.createRange();
+                                rango.selectNodeContents(valor);
+                                var sel = window.getSelection();
+                                sel.removeAllRanges();
+                                sel.addRange(rango);
+                            } catch (err) {}
+                        });
+                    });
+                })(botones[i]);
+            }
+        })();
+
         // ===== VENTANA DE REGALOS =====
         function abrirRegalos() {
             // Además de la ventana, se revela la sección en la página: si el

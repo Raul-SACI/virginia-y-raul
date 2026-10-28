@@ -1199,9 +1199,11 @@
             if (GRUPO === 'brindis') {
                 if (civil)   { civil.style.display = 'none'; }
                 if (brindis) { brindis.style.display = ''; }
+                // A este grupo no se le menciona el civil ni el almuerzo: se lo
+                // invita a su propio momento, no al resto de otro evento.
                 if (texto)   {
-                    texto.textContent = 'Nuestro Civil será el 4 de Diciembre en el Juzgado de Paz de ' +
-                        'Yerba Buena, y luego compartiremos un brindis en el Showroom de Country San Pablo.';
+                    texto.textContent = 'Te esperamos en el Showroom de Country San Pablo para ' +
+                        'compartir un brindis con buena música. ¡Nos vemos!';
                 }
             }
 

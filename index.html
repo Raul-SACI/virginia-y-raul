@@ -83,6 +83,7 @@
         
         body.initial-state .header::after {
             content: 'Haz click para abrir';
+            color: #7A6A5A;
             position: absolute;
             bottom: 40px;
             left: 50%;
@@ -132,11 +133,12 @@
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, rgba(160, 130, 109, 0.60) 0%, rgba(180, 150, 120, 0.60) 100%), url('portada.jpg') center/cover;
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center 45%;
-            color: white;
+            /* `contain` y no `cover`: la foto es apaisada y la portada ocupa una
+               pantalla vertical entera, así que recortarla se comía la guirnalda.
+               Entra completa y el resto lo completa la arena, del mismo tono que
+               los bordes difuminados de la imagen. */
+            background: #F2EADF url('portada-arena.jpg') center/contain no-repeat;
+            color: #6B5B4D;
             padding: 60px 30px;
             text-align: center;
             position: relative;
@@ -161,6 +163,10 @@
             z-index: 1;
         }
         
+        /* La imagen de la portada ya trae las iniciales y «Nuestra Boda».
+           Para recuperar los nombres en texto, borrar esta regla. */
+        .names, .tagline { display: none !important; }
+
         .names {
             font-family: 'Great Vibes', cursive;
             font-size: 64px;

@@ -863,7 +863,8 @@
                 <h2 class="section-title">Confirmá tu asistencia para el Civil</h2>
                 
                 <p style="color: #666; margin-bottom: 20px; font-size: 18px; line-height: 1.8;" id="textoConfirmacion">
-                    Confirmá tu asistencia para nuestro Civil. (4 de Diciembre)
+                    Nuestro Civil será el 4 de Diciembre en el Juzgado de Paz de Yerba Buena,
+                    y luego compartiremos un almuerzo en el Showroom de Country San Pablo.
                 </p>
                 
                 <div class="success-message" id="successMessage">
@@ -1198,7 +1199,10 @@
             if (GRUPO === 'brindis') {
                 if (civil)   { civil.style.display = 'none'; }
                 if (brindis) { brindis.style.display = ''; }
-                if (texto)   { texto.textContent = 'Confirmá tu asistencia al brindis. (4 de Diciembre, 15:00 hs)'; }
+                if (texto)   {
+                    texto.textContent = 'Nuestro Civil será el 4 de Diciembre en el Juzgado de Paz de ' +
+                        'Yerba Buena, y luego compartiremos un brindis en el Showroom de Country San Pablo.';
+                }
             }
 
             // Al invitado solo no se le ofrece un segundo lugar: no hay opción

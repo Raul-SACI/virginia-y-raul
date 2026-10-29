@@ -929,7 +929,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="grupoCancion">
                         <label for="cancion">La canción que no puede faltar</label>
                         <p class="form-hint">
                             Dejanos aquí qué canción creés que no debería faltar en el baile.
@@ -1405,6 +1405,31 @@
                     throw err;
                 });
             }
+
+            // A quien avisa que no viene no se le pide una canción para el baile.
+            // Si ya había escrito algo, se descarta: de lo contrario llegaría a la
+            // planilla un tema a nombre de alguien que no va a estar.
+            (function () {
+                var grupo = document.getElementById('grupoCancion');
+                var campo = document.getElementById('cancion');
+                if (!grupo || !campo) { return; }
+
+                function actualizar() {
+                    var no = document.querySelector('input[name="confirmation"][value="declined"]');
+                    var oculto = !!(no && no.checked);
+                    grupo.style.display = oculto ? 'none' : '';
+                    if (oculto) { campo.value = ''; }
+                }
+
+                var opciones = document.querySelectorAll('input[name="confirmation"]');
+                for (var i = 0; i < opciones.length; i++) {
+                    opciones[i].addEventListener('change', actualizar);
+                }
+                // Tras «Limpiar» o tras enviar, el formulario vuelve a cero y el
+                // campo tiene que reaparecer.
+                form.addEventListener('reset', function () { setTimeout(actualizar, 0); });
+                actualizar();
+            })();
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault();

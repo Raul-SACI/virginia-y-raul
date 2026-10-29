@@ -309,6 +309,19 @@
             font-family: 'Source Sans Pro', sans-serif;
         }
         
+        .form-hint {
+            color: #8A7B6D;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: -2px 0 8px;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 54px;
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -915,7 +928,17 @@
                             </label>
                         </div>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="cancion">La canción que no puede faltar</label>
+                        <p class="form-hint">
+                            Dejanos aquí qué canción creés que no debería faltar en el baile.
+                            Una o dos, las que quieras. (Opcional)
+                        </p>
+                        <textarea id="cancion" name="cancion" rows="2" maxlength="200"
+                                  placeholder="Tema y artista..."></textarea>
+                    </div>
+
                     <div class="button-group">
                         <button type="submit" class="btn-submit">Enviar</button>
                         <button type="reset" class="btn-reset">Limpiar</button>
@@ -1394,6 +1417,7 @@
                     guestName: document.getElementById('guestName').value.trim(),
                     adults: document.getElementById('adults').value,
                     grupo: GRUPO,         // pareja | solo | brindis
+                    cancion: document.getElementById('cancion').value.trim(),
                     confirmation: marcado.value,
                     timestamp: new Date().toLocaleString('es-AR')
                 };

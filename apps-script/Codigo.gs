@@ -1,7 +1,7 @@
 /**
  * Recibe las confirmaciones de la invitación y las escribe en la planilla.
  *
- * Columnas que genera:  NOMBRE | GRUPO | ADULTOS | ESTADO | FECHA
+ * Columnas que genera:  NOMBRE | GRUPO | ADULTOS | ESTADO | CANCIÓN | FECHA
  *
  * IMPORTANTE — la invitación manda el cuerpo como 'text/plain' con un JSON
  * adentro. No cambiar eso a 'application/json': con ese encabezado el navegador
@@ -32,6 +32,7 @@ function doPost(e) {
       GRUPOS[d.grupo] || d.grupo || '',
       Number(d.adults) || 0,
       ESTADOS[d.confirmation] || d.confirmation || '',
+      d.cancion || '',
       new Date()
     ]);
 

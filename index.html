@@ -322,6 +322,29 @@
             min-height: 54px;
         }
 
+        .btn-spotify {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 11px 20px;
+            border-radius: 24px;
+            background: #1DB954;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-spotify:active {
+            transform: scale(0.97);
+            background: #169C45;
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -937,6 +960,16 @@
                         </p>
                         <textarea id="cancion" name="cancion" rows="2" maxlength="200"
                                   placeholder="Tema y artista..."></textarea>
+
+                        <a class="btn-spotify"
+                           href="https://open.spotify.com/playlist/59W9veDDDcM5eiNH3JFRQT"
+                           target="_blank" rel="noopener noreferrer">
+                            <span aria-hidden="true">🎵</span> Agregala a nuestra playlist
+                        </a>
+                        <p class="form-hint" style="margin-top: 8px;">
+                            Si tenés Spotify, sumá tu tema vos mismo. Se abre en otra pestaña,
+                            así no perdés lo que ya cargaste acá.
+                        </p>
                     </div>
 
                     <div class="button-group">

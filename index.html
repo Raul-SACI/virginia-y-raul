@@ -322,6 +322,30 @@
             min-height: 54px;
         }
 
+        .ya-respondio {
+            display: none;
+            background: #f4f1ec;
+            border-left: 4px solid #A0826D;
+            border-radius: 8px;
+            padding: 22px;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
+        .ya-respondio-titulo {
+            color: #6B5B4D;
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .ya-respondio-detalle {
+            color: #7A6A5A;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .ya-respondio .link-regalos { margin-top: 10px; }
+
         .link-regalos {
             margin-top: 14px;
             padding: 6px 4px;
@@ -936,6 +960,12 @@
                     </details>
                 </div>
                 
+                <div class="ya-respondio" id="yaRespondio">
+                    <p class="ya-respondio-titulo" id="yaRespondioTitulo">✓ Ya confirmaste tu asistencia</p>
+                    <p class="ya-respondio-detalle" id="yaRespondioDetalle"></p>
+                    <button type="button" class="link-regalos" id="corregirRespuesta">Quiero corregir mi respuesta</button>
+                </div>
+
                 <form id="confirmationForm" class="form-section">
                     <h3>Por favor, completa tus datos:</h3>
                     
@@ -1397,6 +1427,7 @@
             if (!modal) { return; }
             modal.style.display = 'none';
             document.body.style.overflow = '';
+            if (typeof window.revisarRespuesta === 'function') { window.revisarRespuesta(); }
         }
 
         (function () {
@@ -1493,6 +1524,60 @@
                 actualizar();
             })();
 
+            // Quien ya respondió ve lo que contestó en vez del formulario. Se
+            // recuerda en este dispositivo: no frena a quien entre desde otro
+            // teléfono, pero cubre el caso real de volver a abrir el mismo link.
+            var CLAVE = 'weddingRespuesta';
+            var panel = document.getElementById('yaRespondio');
+            var detalle = document.getElementById('yaRespondioDetalle');
+            var corregir = document.getElementById('corregirRespuesta');
+
+            function recordarRespuesta(datos) {
+                try { localStorage.setItem(CLAVE, JSON.stringify(datos)); } catch (e) {}
+            }
+
+            function respuestaPrevia() {
+                try { return JSON.parse(localStorage.getItem(CLAVE) || 'null'); } catch (e) { return null; }
+            }
+
+            function describir(r) {
+                if (r.confirmation === 'declined') {
+                    return 'Respondiste como ' + r.guestName + ', avisando que no vas a poder asistir.';
+                }
+                var n = Number(r.adults) || 1;
+                return 'Respondiste como ' + r.guestName + ', confirmando ' +
+                       n + (n === 1 ? ' adulto.' : ' adultos.');
+            }
+
+            function revisarRespuesta() {
+                var r = respuestaPrevia();
+                if (!r || !panel) { return; }
+                // textContent y no innerHTML: el nombre lo escribió el invitado.
+                // «Ya confirmaste tu asistencia» no corresponde a quien avisó que no viene.
+                var titulo = document.getElementById('yaRespondioTitulo');
+                if (titulo) {
+                    titulo.textContent = r.confirmation === 'declined'
+                        ? '✓ Recibimos tu respuesta'
+                        : '✓ Ya confirmaste tu asistencia';
+                }
+                if (detalle) { detalle.textContent = describir(r); }
+                panel.style.display = 'block';
+                form.style.display = 'none';
+            }
+
+            if (corregir) {
+                corregir.addEventListener('click', function () {
+                    try { localStorage.removeItem(CLAVE); } catch (e) {}
+                    panel.style.display = 'none';
+                    form.style.display = '';
+                    var r = respuestaPrevia();
+                    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+
+            window.revisarRespuesta = revisarRespuesta;
+            revisarRespuesta();
+
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (enviando) { return; }   // evita doble envío = fila duplicada
@@ -1528,6 +1613,7 @@
                 enviarASheets(datos).then(function () {
                     // El pedido salió del dispositivo correctamente.
                     guardarLocal(datos, true);
+                    recordarRespuesta(datos);
                     terminar();
                     form.reset();
                     // El mensaje queda visible: no se auto-oculta y la página

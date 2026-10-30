@@ -929,8 +929,23 @@
                     </p>
                 </div>
 
-                <!-- Parte II: Nuestra Boda -->
-                <div>
+                <!-- Almuerzo: sólo para quienes llegan a las 13:00 -->
+                <div style="margin-bottom: 40px; display: none;" id="bloqueAlmuerzo">
+                    <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte I: Civil - Almuerzo</h3>
+                    <div class="detail-card">
+                        <p><strong>Viernes 4 de Diciembre</strong></p>
+                        <div class="time">13:00 hs</div>
+                        <p style="margin-top: 12px; font-size: 14px; color: #666;">
+                            Showroom de Country San Pablo
+                        </p>
+                    </div>
+                    <p style="color: #666; margin-top: 20px; font-size: 21px; line-height: 1.8;">
+                        ¡Te esperamos para compartir la mesa con nosotros!
+                    </p>
+                </div>
+
+                <!-- Parte II: Nuestra Boda (no la ve el grupo del almuerzo) -->
+                <div id="bloqueParteII">
                     <h3 style="color: #A0826D; font-size: 22px; margin-bottom: 20px; font-weight: 600; font-family: 'Source Sans Pro', sans-serif;">Parte II: Nuestra Boda</h3>
                     <div class="detail-card">
                         <p><strong>Jueves 7 de Enero</strong></p>
@@ -1283,7 +1298,7 @@
         var GRUPO_ARCHIVO = 'brindis';
 
         var GRUPO = (function () {
-            var permitidos = ['pareja', 'solo', 'brindis'];
+            var permitidos = ['pareja', 'solo', 'brindis', 'almuerzo'];
             var valor = '';
             try {
                 valor = (new URLSearchParams(window.location.search).get('i') || '').toLowerCase().trim();
@@ -1301,23 +1316,36 @@
         (function () {
             var civil    = document.getElementById('bloqueCivil');
             var brindis  = document.getElementById('bloqueBrindis');
+            var almuerzo = document.getElementById('bloqueAlmuerzo');
+            var parteII  = document.getElementById('bloqueParteII');
             var adultos  = document.getElementById('adults');
             var texto    = document.getElementById('textoConfirmacion');
 
+            // A los grupos que llegan más tarde no se les menciona la ceremonia
+            // ni el almuerzo de los demás: se los invita a su propio momento,
+            // no al resto de otro evento.
             if (GRUPO === 'brindis') {
                 if (civil)   { civil.style.display = 'none'; }
                 if (brindis) { brindis.style.display = ''; }
-                // A este grupo no se le menciona el civil ni el almuerzo: se lo
-                // invita a su propio momento, no al resto de otro evento.
                 if (texto)   {
                     texto.textContent = 'Te esperamos en el Showroom de Country San Pablo para ' +
                         'compartir un brindis con buena música. ¡Nos vemos!';
                 }
             }
 
+            if (GRUPO === 'almuerzo') {
+                if (civil)    { civil.style.display = 'none'; }
+                if (almuerzo) { almuerzo.style.display = ''; }
+                if (parteII)  { parteII.style.display = 'none'; }
+                if (texto)    {
+                    texto.textContent = 'Te esperamos en el Showroom de Country San Pablo para ' +
+                        'compartir el almuerzo con nosotros. ¡Nos vemos!';
+                }
+            }
+
             // Al invitado solo no se le ofrece un segundo lugar: no hay opción
             // que rechazar, y queda claro que lo esperamos a él.
-            if (GRUPO === 'solo' && adultos) {
+            if ((GRUPO === 'solo' || GRUPO === 'almuerzo') && adultos) {
                 adultos.innerHTML = '<option value="1" selected>1 adulto</option>';
             }
         })();

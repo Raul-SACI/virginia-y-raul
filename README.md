@@ -23,6 +23,7 @@ Hay un archivo por grupo de invitados:
 | `/`        | `index.html`   | Parejas — civil, almuerzo, 1 o 2 adultos |
 | `/solo`    | `solo.html`    | Invitados solos — civil, almuerzo, 1 adulto fijo |
 | `/brindis` | `brindis.html` | Brindis de las 15:00 |
+| `/almuerzo`| `almuerzo.html`| Almuerzo desde las 13:00, 1 adulto fijo, sin Punta Cana |
 
 Están separados porque WhatsApp no ejecuta JavaScript al armar la vista previa
 del link: para que cada invitación tenga su propia tarjeta, el título tiene que

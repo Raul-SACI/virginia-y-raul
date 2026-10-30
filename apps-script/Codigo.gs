@@ -12,7 +12,8 @@
 var GRUPOS = {
   pareja:  'Pareja',
   solo:    'Solo',
-  brindis: 'Brindis'
+  brindis: 'Brindis',
+  almuerzo: 'Almuerzo'
 };
 
 var ESTADOS = {

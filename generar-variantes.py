@@ -30,6 +30,12 @@ VARIANTES = {
         'descripcion': 'Viernes 4 de diciembre · Brindis a las 15:00. Entrá para ver los detalles y confirmar tu asistencia.',
         'url': SITIO + '/brindis',
     },
+    'almuerzo': {
+        'archivo': 'almuerzo.html',
+        'titulo': 'Virginia &amp; Raúl - Almuerzo Civil',
+        'descripcion': 'Viernes 4 de diciembre · Almuerzo a las 13:00. Entrá para ver los detalles y confirmar tu asistencia.',
+        'url': SITIO + '/almuerzo',
+    },
 }
 
 AVISO = ('<!-- ARCHIVO GENERADO por generar-variantes.py a partir de index.html.\n'

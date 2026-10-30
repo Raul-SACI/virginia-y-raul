@@ -322,6 +322,25 @@
             min-height: 54px;
         }
 
+        .link-regalos {
+            margin-top: 14px;
+            padding: 6px 4px;
+            border: none;
+            background: none;
+            color: #A0826D;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .link-regalos:active { color: #8A6F5E; }
+
         .btn-spotify {
             display: inline-flex;
             align-items: center;
@@ -982,6 +1001,7 @@
             <!-- Footer -->
             <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e0e0e0; margin-top: 40px; color: #999; font-size: 18px;">
                 <p>Gracias por ser parte de nuestro día especial</p>
+                <button type="button" class="link-regalos" id="linkRegalos">Datos para regalo</button>
             </div>
         </div>
     </div>
@@ -1348,6 +1368,10 @@
                 titulo: '¡Muchas gracias por acompañarnos!',
                 intro: 'Si deseás acompañarnos también con un obsequio, te dejamos nuestros datos bancarios.'
             },
+            consulta: {
+                titulo: 'Datos para regalo',
+                intro: 'Si deseás acompañarnos con un obsequio, te dejamos nuestros datos bancarios.'
+            },
             declined: {
                 titulo: '¡Gracias por avisarnos!',
                 intro: '¡Qué lástima que no puedas asistir, te vamos a extrañar! Si deseás acompañarnos con un obsequio, te dejamos nuestros datos bancarios.'
@@ -1376,6 +1400,11 @@
         }
 
         (function () {
+            var link = document.getElementById('linkRegalos');
+            if (link) {
+                link.addEventListener('click', function () { abrirRegalos('consulta'); });
+            }
+
             var cerrar = document.getElementById('regalosClose');
             var ok = document.getElementById('regalosOk');
             if (cerrar) { cerrar.addEventListener('click', cerrarRegalos); }
